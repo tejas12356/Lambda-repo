@@ -1,0 +1,121 @@
+pipeline {
+    // agent section specifies where the entire Pipeline will execute in the Jenkins environment
+    
+	agent any  
+
+    tools {
+        maven 'maven' 
+        jdk 'java'
+    }
+   
+    
+    stages {
+        
+        stage('Prepare') {
+            steps {
+                
+				checkout(
+				       [ $class: 'GitSCM', 
+					   branches: [[name: '*/master']], 
+					   doGenerateSubmoduleConfigurations: false, extensions: [], 
+					   submoduleCfg: [], 
+					   userRemoteConfigs: [[url: 'https://github.com/tejas12356/jenkins-example.git']]
+					]
+				)
+                
+            }
+        }
+
+        stage('Maven version') {
+            steps {
+                echo "Hello, Maven"
+                sh "mvn --version" // Runs a Bourne shell script, typically on a Unix node
+            }
+        }
+
+        stage('build') {
+            steps {
+                sh 'mvn clean package'
+				sh 'zip  maven.zip target/jenkins-example-1.0-SNAPSHOT.jar'
+				sh  'terraform --version'
+			}
+		}
+        
+        
+        stage('upload to s3') {
+		    steps {
+                  withAWS(region:'ap-south-1',credentials:'awscred') {
+                       s3Upload(file:'maven.zip', bucket:'eqbucket34', path:'artifact/')
+		       s3Upload(file:'target/jenkins-example-1.0-SNAPSHOT.jar', bucket:'eqbucket34', path:'artifact/')
+            }
+            
+          }
+        }
+		
+		stage ('predeploy') {
+		    steps {  
+			      
+				  sh 'terraform init'
+				}
+            } 		
+			
+		stage("Deploy") { //Execute Terraform actions in AWS:
+
+            steps {
+                  
+				 echo "Applyng Infra Plan"
+				 
+				 script {   
+						 
+						 if(TERRAFORM_ACTION == "plan") 
+							println("Terraform plan starting; plz standby...")
+				             withCredentials([[
+                             $class: 'AmazonWebServicesCredentialsBinding',
+                             credentialsId: 'awscred',
+                             accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                             ]])			
+							{
+							sh """
+							terraform remote config -backend=S3 -backend-config="bucket=eqterraformstate" -backend-config="key=state.tfstate" -backend-config="region=ap-south-1"
+							terraform plan -out plan.plan
+							"""
+    					}
+						
+				         if (TERRAFORM_ACTION == "apply")
+						
+							println("Terraform plan starting; plz standby...")
+							withCredentials([[
+                             $class: 'AmazonWebServicesCredentialsBinding',
+                             credentialsId: 'awscred',
+                             accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                             ]])							 
+							 {
+							sh """
+							terraform remote config -backend=S3 -backend-config="bucket=eqterraformstate" -backend-config="key=state.tfstate" -backend-config="region=ap-south-1"
+							terraform apply -out plan.plan
+							"""
+			            }
+                    				
+						 if (TERRAFORM_ACTION == "destroy") 
+						
+							println("Terraform plan starting; plz standby...")
+							ithCredentials([[
+                             $class: 'AmazonWebServicesCredentialsBinding',
+                             credentialsId: 'awscred',
+                             accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                             ]]) {
+							sh """
+							terraform remote config -backend=S3 -backend-config="bucket=eqterraformstate" -backend-config="key=state.tfstate" -backend-config="region=ap-south-1"
+							terraform destroy -out plan.plan
+							"""
+			            }	
+			        }
+                }
+		
+	        }	
+	    }
+	
+    }
