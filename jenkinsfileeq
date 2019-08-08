@@ -94,7 +94,7 @@ pipeline {
 							 {
 							sh """
 							terraform remote config -backend=S3 -backend-config="bucket=eqterraformstate" -backend-config="key=state.tfstate" -backend-config="region=ap-south-1"
-							terraform apply -out plan.plan
+							terraform apply
 							"""
 			            }
                     				
@@ -109,7 +109,7 @@ pipeline {
                              ]]) {
 							sh """
 							terraform remote config -backend=S3 -backend-config="bucket=eqterraformstate" -backend-config="key=state.tfstate" -backend-config="region=ap-south-1"
-							terraform destroy -out plan.plan
+							terraform destroy 
 							"""
 			            }	
 			        }
