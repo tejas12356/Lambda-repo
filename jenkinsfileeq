@@ -14,7 +14,7 @@ pipeline {
         
         stage('Prepare') {
             
-                
+            steps {    
 				checkout(
 				       [ $class: 'GitSCM', 
 					   branches: [[name: '*/master']], 
@@ -23,14 +23,14 @@ pipeline {
 					   userRemoteConfigs: [[url: 'https://github.com/tejas12356/jenkins-example.git']]
 					]
 				)
-                
+            }   
             
         }
 
         stage('Maven version') {
             steps {
-                echo "Hello, Maven"
-                //sh "mvn --version" // Runs a Bourne shell script, typically on a Unix node
+                
+                sh "mvn --version" // Runs a Bourne shell script, typically on a Unix node
                 sh "echo $TERRAFORM"
             }
         }
