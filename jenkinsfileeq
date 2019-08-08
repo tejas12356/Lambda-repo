@@ -7,7 +7,7 @@ pipeline {
         maven 'maven' 
         jdk 'java'
     }
-   
+    
     
     stages {
         
@@ -77,7 +77,7 @@ pipeline {
 				 
 				 script {   
 						 
-						 if(TERRAFORM_ACTION == "plan") 
+						 if( ${TERRAFORM_ACTION} == "plan") 
 							println("Terraform plan starting; plz standby...")
 				             withCredentials([[
                              $class: 'AmazonWebServicesCredentialsBinding',
@@ -90,7 +90,7 @@ pipeline {
 	
     					}
 						
-				         if (TERRAFORM_ACTION == "apply")
+				         if ( ${TERRAFORM_ACTION} == "apply")
 						
 							println("Terraform plan starting; plz standby...")
 							withCredentials([[
@@ -106,7 +106,7 @@ pipeline {
 							"""
 			            }
                     				
-						 if (TERRAFORM_ACTION == "destroy") 
+						 if ( ${TERRAFORM_ACTION} == "destroy") 
 						
 							println("Terraform plan starting; plz standby...")
 							ithCredentials([[
