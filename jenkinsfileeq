@@ -93,7 +93,7 @@ pipeline {
 	
     					            }   
                          }
-				         if (TERRAFORM == "apply")
+				         if (TERRAFORM == "apply") {
 						
                                 println("Terraform plan starting; plz standby...")
                                 withCredentials([[
@@ -107,8 +107,9 @@ pipeline {
                             
                                         
 			                        }
-                    				
-						 if (TERRAFORM == "destroy") 
+                         }	
+
+						 if (TERRAFORM == "destroy") {
 						
                                 println("Terraform plan starting; plz standby...")
                                 withCredentials([[
@@ -128,3 +129,4 @@ pipeline {
 	    }
 	
     }
+}
