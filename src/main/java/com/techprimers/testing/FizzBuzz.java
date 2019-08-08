@@ -1,14 +1,9 @@
-@FunctionalInterface
-interface MyFunctionalInterface {
+package com.techprimers.testing;
 
-	//A method with single parameter
-    public int incrementByFive(int a);
-}
-public class Example {
+public class FizzBuzz {
 
-   public static void main(String args[]) {
-        // lambda expression with single parameter num
-    	MyFunctionalInterface f = (num) -> num+5;
-        System.out.println(f.incrementByFive(22));
-    }
-}
+    public String play(int number) {
+
+        if (number == 0) throw new IllegalArgumentException("Number must not be 0");
+        if (number % 3 == 0) return "Fizz";
+        if (number % 5 == 0) return "Buzz";
