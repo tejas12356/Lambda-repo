@@ -79,52 +79,49 @@ pipeline {
 
                  
 				 
-				 script {   
+				 script {    
 						 
-						 if (TERRAFORM == "plan") 
-							println("Terraform plan starting; plz standby...")
-				             withCredentials([[
-                             $class: 'AmazonWebServicesCredentialsBinding',
-                             credentialsId: 'awscred',
-                             accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                             ]])			
-							{
-							sh 'terraform plan ' 
+						 if (TERRAFORM == "plan") {
+                                println("Terraform plan starting; plz standby...")
+                                withCredentials([[
+                                    $class: 'AmazonWebServicesCredentialsBinding',
+                                    credentialsId: 'awscred',
+                                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                                ]]) {
+                                        sh 'terraform plan ' 
 	
-    					}
-						
+    					            }   
+                         }
 				         if (TERRAFORM == "apply")
 						
-							println("Terraform plan starting; plz standby...")
-							withCredentials([[
-                             $class: 'AmazonWebServicesCredentialsBinding',
-                             credentialsId: 'awscred',
-                             accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                             ]])							 
-							 {
-							sh """
-				
-							terraform apply -auto-approve
-							"""
-			            }
+                                println("Terraform plan starting; plz standby...")
+                                withCredentials([[
+                                $class: 'AmazonWebServicesCredentialsBinding',
+                                credentialsId: 'awscred',
+                                accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                                secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                                ]])							 
+                                    {
+                                        sh """ terraform apply -auto-approve """
+                            
+                                        
+			                        }
                     				
 						 if (TERRAFORM == "destroy") 
 						
-							println("Terraform plan starting; plz standby...")
-							ithCredentials([[
-                             $class: 'AmazonWebServicesCredentialsBinding',
-                             credentialsId: 'awscred',
-                             accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                             ]]) {
-							sh """
-							
-							terraform destroy 
-							"""
-			            }	
-			        }
+                                println("Terraform plan starting; plz standby...")
+                                withCredentials([[
+                                $class: 'AmazonWebServicesCredentialsBinding',
+                                credentialsId: 'awscred',
+                                accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                                secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                                ]]) {
+                                            sh "terraform destroy"
+                                        
+                                        
+			                        }	
+			            }
                 }
 		
 	        }	
