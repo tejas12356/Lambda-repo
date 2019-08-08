@@ -1,15 +1,14 @@
-import java.util.*;  
-public class Lambda{  
-    public static void main(String[] args) {  
-          
-        List<String> list=new ArrayList<String>();  
-        list.add("ankit");  
-        list.add("mayank");  
-        list.add("irfan");  
-        list.add("jai");  
-          
-        list.forEach(  
-            (n)->System.out.println(n)  
-        );  
-    }  
-}  
+package com.techprimers.testing;
+
+public class FizzBuzz {
+
+    public String play(int number) {
+
+        if (number == 0) throw new IllegalArgumentException("Number must not be 0");
+        if (number % 3 == 0) return "Fizz";
+        if (number % 5 == 0) return "Buzz";
+
+
+        return String.valueOf(number);
+    }
+}
