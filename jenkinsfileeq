@@ -104,7 +104,7 @@ pipeline {
                                 ]])							 
                                     {
                                         sh """ 
-                                        terraform remote config -backend=S3 -backend-config="bucket=eqterraformstate" -backend-config="key=state.tfstate" -backend-config="region=ap-south-1"
+                                        
                                         terraform apply -auto-approve """
                             
                                         
