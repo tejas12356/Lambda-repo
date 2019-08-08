@@ -8,7 +8,6 @@ pipeline {
         jdk 'java'
     }
     
-    
     stages {
         
         stage('Prepare') {
@@ -74,10 +73,12 @@ pipeline {
 						
                   
 				 echo "Applyng Infra Plan"
+
+                 ACTION = "${TERRAFORM_ACTION}" 
 				 
 				 script {   
 						 
-						 if( ${TERRAFORM_ACTION} == "plan") 
+						 if (ACTION == "plan") 
 							println("Terraform plan starting; plz standby...")
 				             withCredentials([[
                              $class: 'AmazonWebServicesCredentialsBinding',
@@ -90,7 +91,7 @@ pipeline {
 	
     					}
 						
-				         if ( ${TERRAFORM_ACTION} == "apply")
+				         if (ACTION == "apply")
 						
 							println("Terraform plan starting; plz standby...")
 							withCredentials([[
@@ -106,7 +107,7 @@ pipeline {
 							"""
 			            }
                     				
-						 if ( ${TERRAFORM_ACTION} == "destroy") 
+						 if (ACTION == "destroy") 
 						
 							println("Terraform plan starting; plz standby...")
 							ithCredentials([[
