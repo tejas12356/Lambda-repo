@@ -86,10 +86,8 @@ pipeline {
                              secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                              ]])			
 							{
-							sh """
-							terraform remote config -backend=S3 -backend-config="bucket=eqterraformstate" -backend-config="key=state.tfstate" -backend-config="region=ap-south-1"
-							terraform plan 
-							"""
+							sh 'terraform plan' 
+	
     					}
 						
 				         if (TERRAFORM_ACTION == "apply")
