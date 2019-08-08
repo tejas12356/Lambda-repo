@@ -37,7 +37,7 @@ pipeline {
             steps {
                 sh 'mvn clean package'
 				sh 'zip  maven.zip target/jenkins-example-1.0-SNAPSHOT.jar'
-				//sh  'terraform --version'
+				sh  'terraform --version'
 			}
 		}
         
@@ -55,13 +55,23 @@ pipeline {
 		stage ('predeploy') {
 		    steps {  
 			      
-				  sh 'terraform init'
-				}
+				  withCredentials([[
+                             $class: 'AmazonWebServicesCredentialsBinding',
+                             credentialsId: 'awscred',
+                             accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                             ]])
+							 {
+								sh 'terraform init'
+							}
+      
+				   }
             } 		
 			
 		stage("Deploy") { //Execute Terraform actions in AWS:
 
             steps {
+						
                   
 				 echo "Applyng Infra Plan"
 				 
@@ -94,7 +104,7 @@ pipeline {
 							 {
 							sh """
 							terraform remote config -backend=S3 -backend-config="bucket=eqterraformstate" -backend-config="key=state.tfstate" -backend-config="region=ap-south-1"
-							terraform apply
+							terraform apply -out plan.plan
 							"""
 			            }
                     				
@@ -109,7 +119,7 @@ pipeline {
                              ]]) {
 							sh """
 							terraform remote config -backend=S3 -backend-config="bucket=eqterraformstate" -backend-config="key=state.tfstate" -backend-config="region=ap-south-1"
-							terraform destroy 
+							terraform destroy -out plan.plan
 							"""
 			            }	
 			        }
