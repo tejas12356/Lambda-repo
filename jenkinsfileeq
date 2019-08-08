@@ -13,7 +13,7 @@ pipeline {
     stages {
         
         stage('Prepare') {
-            steps {
+            
                 
 				checkout(
 				       [ $class: 'GitSCM', 
@@ -24,7 +24,7 @@ pipeline {
 					]
 				)
                 
-            }
+            
         }
 
         stage('Maven version') {
