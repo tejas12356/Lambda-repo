@@ -8,8 +8,8 @@ pipeline {
         jdk 'java'
     }
     environment {
-        ACTION = "${TERRAFORM_ACTION}"
-    }
+	   TERRAFORM = "${TERRAFORM_ACTION}"
+	 }
     stages {
         
         stage('Prepare') {
@@ -31,6 +31,7 @@ pipeline {
             steps {
                 echo "Hello, Maven"
                 sh "mvn --version" // Runs a Bourne shell script, typically on a Unix node
+                sh "echo $TERRAFORM"
             }
         }
 
@@ -52,50 +53,7 @@ pipeline {
             
           }
         }
-		stage("Init Pipeline") { //Define variables that can change with each job run:
-
-            steps {
-                
-                script {
-
-                     TERRAFORM_ACTION = TERRAFORM_ACTION.toLowerCase()
-                    
-
-                    switch(TERRAFORM_ACTION)
-
-                    {
-
-                        case "plan":
-
-                            buildAction = "plan -no-color "
-
-                            break
-
-                        case "apply":
-
-                            buildAction = "apply -no-color -auto-approve "
-
-                            break
-
-                        case "destroy":
-
-                            buildAction = "destroy -no-color  -force"
-
-                            break
-
-                        default:
-
-                            echo "Build failed, as \"${TERRAFORM_ACTION}\" is not a valid terraform action"
-
-                            error err
-
-                    }
-
-                }
-
-            }
-
-        }
+		
 		stage ('predeploy') {
 		    steps {  
 			      
@@ -123,7 +81,7 @@ pipeline {
 				 
 				 script {   
 						 
-						 if (ACTION == "plan") 
+						 if (TERRAFORM == "plan") 
 							println("Terraform plan starting; plz standby...")
 				             withCredentials([[
                              $class: 'AmazonWebServicesCredentialsBinding',
@@ -132,11 +90,11 @@ pipeline {
                              secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                              ]])			
 							{
-							sh 'terraform plan' 
+							sh 'terraform plan ' 
 	
     					}
 						
-				         if (ACTION == "apply")
+				         if (TERRAFORM == "apply")
 						
 							println("Terraform plan starting; plz standby...")
 							withCredentials([[
@@ -148,11 +106,11 @@ pipeline {
 							 {
 							sh """
 				
-							terraform apply 
+							terraform apply -auto-approve
 							"""
 			            }
                     				
-						 if (ACTION == "destroy") 
+						 if (TERRAFORM == "destroy") 
 						
 							println("Terraform plan starting; plz standby...")
 							ithCredentials([[
