@@ -52,7 +52,50 @@ pipeline {
             
           }
         }
-		
+		stage("Init Pipeline") { //Define variables that can change with each job run:
+
+            steps {
+                
+                script {
+
+                     TERRAFORM_ACTION = TERRAFORM_ACTION.toLowerCase()
+                    
+
+                    switch(TERRAFORM_ACTION)
+
+                    {
+
+                        case "plan":
+
+                            buildAction = "plan -no-color "
+
+                            break
+
+                        case "apply":
+
+                            buildAction = "apply -no-color -auto-approve "
+
+                            break
+
+                        case "destroy":
+
+                            buildAction = "destroy -no-color  -force"
+
+                            break
+
+                        default:
+
+                            echo "Build failed, as \"${TERRAFORM_ACTION}\" is not a valid terraform action"
+
+                            error err
+
+                    }
+
+                }
+
+            }
+
+        }
 		stage ('predeploy') {
 		    steps {  
 			      
