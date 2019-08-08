@@ -7,7 +7,9 @@ pipeline {
         maven 'maven' 
         jdk 'java'
     }
-    
+    environment {
+        ACTION=${TERRAFORM_ACTION}
+    }
     stages {
         
         stage('Prepare') {
@@ -74,7 +76,7 @@ pipeline {
                   
 				 echo "Applyng Infra Plan"
 
-                 ACTION = "${TERRAFORM_ACTION}" 
+                 
 				 
 				 script {   
 						 
